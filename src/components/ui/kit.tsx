@@ -198,3 +198,39 @@ export function SectionTitle({ children, right }: { children: ReactNode; right?:
     </div>
   )
 }
+
+export function Skeleton({ className = '', h = 16, w }: { className?: string; h?: number; w?: number | string }) {
+  return <div className={`skeleton ${className}`} style={{ height: h, width: w }} />
+}
+
+export function KpiSkeleton() {
+  return (
+    <Card className="p-4 flex flex-col gap-3">
+      <Skeleton h={10} w="55%" />
+      <Skeleton h={24} w="45%" />
+      <Skeleton h={10} w="70%" />
+    </Card>
+  )
+}
+
+export function TableSkeleton({ rows = 4 }: { rows?: number }) {
+  return (
+    <Card className="p-4 flex flex-col gap-4">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="flex items-center gap-3">
+          <Skeleton h={32} w={32} className="rounded-[8px]" />
+          <Skeleton h={14} w="26%" />
+          <div className="flex-1" />
+          <Skeleton h={14} w={60} />
+          <Skeleton h={14} w={60} />
+          <Skeleton h={14} w={80} />
+        </div>
+      ))}
+    </Card>
+  )
+}
+
+const PRIORITY_COLOR: Record<string, string> = { high: 'var(--st-serious)', medium: 'var(--st-warn)', low: 'var(--muted)' }
+export function PriorityDot({ priority }: { priority: 'high' | 'medium' | 'low' }) {
+  return <span className="w-2 h-2 rounded-full flex-none" style={{ background: PRIORITY_COLOR[priority] }} />
+}

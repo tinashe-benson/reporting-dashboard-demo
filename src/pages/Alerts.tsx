@@ -1,17 +1,20 @@
 /** Alerts: every open exception across the roster, most severe first. */
 import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
-import { allAlerts, type Severity } from '@/lib/data'
+import { useApp } from '@/context/app'
+import { accountsForSeat, allAlerts, ACCOUNTS, type Severity } from '@/lib/data'
 import { Card, SeverityDot, Chip } from '@/components/ui/kit'
+import { Reveal } from '@/components/ui/disclosure'
 
 const SEV_LABEL: Record<Severity, string> = { serious: 'At risk', warning: 'Watch', info: 'Info' }
 
 export default function Alerts() {
-  const alerts = allAlerts()
+  const { seat } = useApp()
+  const alerts = allAlerts(seat ? accountsForSeat(seat) : ACCOUNTS)
   const groups: Severity[] = ['serious', 'warning', 'info']
 
   return (
-    <div className="flex flex-col gap-6 max-w-[860px]">
+    <Reveal className="flex flex-col gap-6 max-w-[860px]">
       {groups.map((sev) => {
         const items = alerts.filter((a) => a.severity === sev)
         if (items.length === 0) return null
@@ -39,6 +42,6 @@ export default function Alerts() {
         )
       })}
       {alerts.length === 0 && <Card className="p-10 text-center text-[13px] text-[var(--muted)]">No open alerts.</Card>}
-    </div>
+    </Reveal>
   )
 }

@@ -8,7 +8,7 @@ import { useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Printer, Check } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { ACCOUNTS, getAccount, metricsFor, pacing, RANGES } from '@/lib/data'
+import { accountsForSeat, ACCOUNTS, getAccount, metricsFor, pacing, RANGES } from '@/lib/data'
 import { money, money2, num, compact } from '@/lib/format'
 import { Card, Button, Toggle, Segmented } from '@/components/ui/kit'
 
@@ -25,8 +25,10 @@ const AGENCY = 'Tinashe Benson · Growth'
 
 export default function Reports() {
   const [params] = useSearchParams()
-  const { range, setRange } = useApp()
-  const initial = getAccount(params.get('account') || '') ? params.get('account')! : ACCOUNTS[0].id
+  const { range, setRange, seat } = useApp()
+  const scope = seat ? accountsForSeat(seat) : ACCOUNTS
+  const paramAcct = params.get('account') || ''
+  const initial = scope.some((a) => a.id === paramAcct) ? paramAcct : scope[0].id
   const [accountId, setAccountId] = useState(initial)
   const [sections, setSections] = useState<Record<SectionKey, boolean>>({ headline: true, channels: true, google: true, search: true, summary: true })
 
@@ -45,7 +47,7 @@ export default function Reports() {
 
           <label className="eyebrow">Account</label>
           <div className="mt-2 mb-4 flex flex-col gap-1.5">
-            {ACCOUNTS.map((a) => (
+            {scope.map((a) => (
               <button
                 key={a.id}
                 onClick={() => setAccountId(a.id)}

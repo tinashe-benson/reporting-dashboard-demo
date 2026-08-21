@@ -27,6 +27,46 @@ export const ROLES: Role[] = [
 ]
 
 // ---------------------------------------------------------------------------
+// Seats (mock auth). An owner sees the whole agency; each manager sees only
+// the accounts assigned to them. No passwords — this is a demo.
+// ---------------------------------------------------------------------------
+
+export interface Seat {
+  id: string
+  name: string
+  initials: string
+  role: RoleId
+  title: string
+  /** Account ids this seat manages. Owner is assigned all, implicitly. */
+  accountIds: string[]
+}
+
+export const SEATS: Seat[] = [
+  { id: 'owner', name: 'Tinashe Benson', initials: 'TB', role: 'owner', title: 'Agency owner', accountIds: [] },
+  { id: 'dana', name: 'Dana Okafor', initials: 'DO', role: 'manager', title: 'Account manager', accountIds: ['summit-air', 'ironclad-roofing'] },
+  { id: 'marcus', name: 'Marcus Reyes', initials: 'MR', role: 'manager', title: 'Account manager', accountIds: ['riverrun-plumbing', 'greenshield-pest'] },
+]
+
+export function getSeat(id: string): Seat | undefined {
+  return SEATS.find((s) => s.id === id)
+}
+
+/** Accounts a seat is allowed to see. */
+export function accountsForSeat(seat: Seat): Account[] {
+  if (seat.role === 'owner') return ACCOUNTS
+  return ACCOUNTS.filter((a) => seat.accountIds.includes(a.id))
+}
+
+export function seatCanSee(seat: Seat, accountId: string): boolean {
+  return seat.role === 'owner' || seat.accountIds.includes(accountId)
+}
+
+/** Which manager owns an account (for the owner's roster view). */
+export function managerFor(accountId: string): Seat | undefined {
+  return SEATS.find((s) => s.role === 'manager' && s.accountIds.includes(accountId))
+}
+
+// ---------------------------------------------------------------------------
 // Platforms
 // ---------------------------------------------------------------------------
 
@@ -376,18 +416,18 @@ export function alertsFor(a: Account): Alert[] {
 
 const SEV_RANK: Record<Severity, number> = { serious: 0, warning: 1, info: 2 }
 
-export function allAlerts(): Alert[] {
-  return ACCOUNTS.flatMap(alertsFor).sort((x, y) => SEV_RANK[x.severity] - SEV_RANK[y.severity])
+export function allAlerts(accounts: Account[] = ACCOUNTS): Alert[] {
+  return accounts.flatMap(alertsFor).sort((x, y) => SEV_RANK[x.severity] - SEV_RANK[y.severity])
 }
 
 // ---------------------------------------------------------------------------
 // Portfolio totals
 // ---------------------------------------------------------------------------
 
-export function portfolioTotals(range: RangeId) {
+export function portfolioTotals(range: RangeId, accounts: Account[] = ACCOUNTS) {
   let leads = 0, leadsPrev = 0, spend = 0, spendPrev = 0, managed = 0
   const days = RANGES.find((r) => r.id === range)!.days
-  for (const a of ACCOUNTS) {
+  for (const a of accounts) {
     leads += windowSum(a.leadsDaily, days, 0)
     leadsPrev += windowSum(a.leadsDaily, days, 1)
     spend += windowSum(a.spendDaily, days, 0)
@@ -397,7 +437,7 @@ export function portfolioTotals(range: RangeId) {
   const cpl = leads > 0 ? spend / leads : 0
   const cplPrev = leadsPrev > 0 ? spendPrev / leadsPrev : 0
   return {
-    accounts: ACCOUNTS.length,
+    accounts: accounts.length,
     leads: Math.round(leads),
     leadsDelta: pctChange(leads, leadsPrev),
     spend: Math.round(spend),
@@ -405,8 +445,8 @@ export function portfolioTotals(range: RangeId) {
     managed: Math.round(managed),
     cpl,
     cplDelta: pctChange(cpl, cplPrev),
-    openAlerts: allAlerts().length,
-    atRisk: ACCOUNTS.filter((a) => health(a) === 'risk').length,
-    watch: ACCOUNTS.filter((a) => health(a) === 'watch').length,
+    openAlerts: allAlerts(accounts).length,
+    atRisk: accounts.filter((a) => health(a) === 'risk').length,
+    watch: accounts.filter((a) => health(a) === 'watch').length,
   }
 }
