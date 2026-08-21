@@ -1,0 +1,78 @@
+/** Portfolio: roster-wide summary, the exceptions rail, and the accounts table. */
+import { Link, useNavigate } from 'react-router'
+import { ArrowRight } from 'lucide-react'
+import { useApp } from '@/context/app'
+import { ACCOUNTS, RANGES, allAlerts, portfolioTotals } from '@/lib/data'
+import { money, money2, moneyK, num } from '@/lib/format'
+import { Card, Stat, Segmented, Button, SectionTitle, SeverityDot, Chip } from '@/components/ui/kit'
+import AccountsTable from '@/components/AccountsTable'
+
+export default function Portfolio() {
+  const { range, setRange, role } = useApp()
+  const t = portfolioTotals(range)
+  const alerts = allAlerts()
+  const navigate = useNavigate()
+  const retainerTotal = ACCOUNTS.reduce((s, a) => s + a.retainer, 0)
+  const marginEst = Math.round(retainerTotal * 0.62)
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* KPI strip */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+        <Stat label="Active accounts" value={t.accounts} note="All syncing" />
+        <Stat label="Managed spend · 30d" value={moneyK(t.managed)} delta={t.spendDelta} note="vs prior" />
+        <Stat label="Blended cost / lead" value={money2(t.cpl)} delta={t.cplDelta} lowerIsBetter note="lower is better" />
+        <Stat label="Leads" value={num(t.leads)} delta={t.leadsDelta} note="across roster" />
+        <Stat label="Open alerts" value={t.openAlerts} note={`${t.atRisk} at risk · ${t.watch} watch`} />
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-1 gap-6">
+        {/* Needs attention */}
+        <section>
+          <SectionTitle right={<Button variant="ghost" onClick={() => navigate('/alerts')}>View all alerts <ArrowRight size={15} /></Button>}>
+            Needs attention
+          </SectionTitle>
+          <Card>
+            {alerts.slice(0, 4).map((al, i) => (
+              <Link
+                key={al.id}
+                to={`/accounts/${al.accountId}`}
+                className={`flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface-2)] transition-colors ${i > 0 ? 'border-t border-[var(--line)]' : ''}`}
+              >
+                <SeverityDot severity={al.severity} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-semibold text-[var(--ink)]">{al.title}</div>
+                  <div className="text-[11.5px] text-[var(--ink-2)] truncate">{al.detail}</div>
+                </div>
+                <span className="text-[11px] text-[var(--muted)] font-medium whitespace-nowrap hidden sm:block">{al.accountName}</span>
+                <Chip tone={al.severity === 'serious' ? 'serious' : 'warn'}>{al.tag}</Chip>
+              </Link>
+            ))}
+            {alerts.length === 0 && <div className="px-4 py-8 text-center text-[13px] text-[var(--muted)]">Nothing needs attention. Every account is healthy.</div>}
+          </Card>
+        </section>
+
+        {/* Accounts */}
+        <section>
+          <SectionTitle right={<Segmented value={range} onChange={setRange} options={RANGES.map((r) => ({ value: r.id, label: r.label }))} />}>
+            Accounts
+          </SectionTitle>
+          <AccountsTable range={range} />
+        </section>
+
+        {/* Owner economics */}
+        {role === 'owner' && (
+          <section>
+            <SectionTitle>Agency economics</SectionTitle>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+              <Stat label="Recurring retainer · mo" value={money(retainerTotal)} note="Across 4 accounts" />
+              <Stat label="Managed ad budget" value={money(ACCOUNTS.reduce((s, a) => s + a.budget, 0))} note="Monthly, pass-through" />
+              <Stat label="Est. gross margin" value={money(marginEst)} note="After delivery cost" />
+              <Stat label="Owner seat only" value={<span className="text-[15px] text-[var(--ink-2)] font-semibold">Hidden from managers</span>} />
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  )
+}
