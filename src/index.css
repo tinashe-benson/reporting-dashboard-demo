@@ -169,9 +169,17 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 }
 
-/* Print: only the report sheet shows. */
+/* Print: only the report sheet shows, always on a light ground so the PDF is
+   clean even when the operator exported from dark mode. */
 @media print {
+  :root {
+    --plane: #ffffff; --surface: #ffffff; --surface-2: #f7f8fa;
+    --ink: #101828; --ink-2: #5a6472; --muted: #98a2b3;
+    --line: #e7e9ee; --line-2: #d7dbe2;
+    --good: #067647; --bad: #b42318;
+  }
   .no-print { display: none !important; }
   body { background: #fff; }
   .print-sheet { box-shadow: none !important; border: none !important; }
+  .break-inside-avoid { break-inside: avoid; }
 }
