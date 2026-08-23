@@ -75,7 +75,7 @@ export function RecommendationsPanel({ accounts, showAccount = true }: { account
               {generating ? 'Generating…' : `Generate with ${model?.label ?? 'model'}`}
             </Button>
           ) : (
-            <Link to="/integrations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">
+            <Link to="/app/integrations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">
               <Sparkles size={14} /> Connect a model for AI suggestions <ArrowRight size={13} />
             </Link>
           )}

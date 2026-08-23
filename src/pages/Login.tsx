@@ -1,9 +1,10 @@
 /** Mock seat login. No password — pick who you are and the app scopes to it. */
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router'
-import { ArrowRight, RadioTower } from 'lucide-react'
+import { Link, useNavigate } from 'react-router'
+import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { useApp } from '@/context/app'
 import { SEATS, accountsForSeat } from '@/lib/data'
+import { Logo } from '@/components/Logo'
 
 export default function Login() {
   const { login } = useApp()
@@ -11,7 +12,7 @@ export default function Login() {
 
   function pick(id: string) {
     login(id)
-    navigate('/')
+    navigate('/app')
   }
 
   return (
@@ -22,10 +23,11 @@ export default function Login() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-[440px]"
       >
+        <Link to="/" className="inline-flex items-center gap-1.5 text-[12.5px] text-[var(--muted)] hover:text-[var(--ink)] mb-5 transition-colors"><ArrowLeft size={14} /> Back to home</Link>
         <div className="flex items-center gap-2.5 mb-1">
-          <div className="w-9 h-9 rounded-[9px] bg-[var(--ink)] text-[var(--surface)] grid place-items-center flex-none"><RadioTower size={19} /></div>
+          <Logo size={36} />
           <div>
-            <div className="font-bold text-[17px] tracking-[-0.01em] leading-none">Reportbeacon</div>
+            <div className="font-bold text-[17px] tracking-[-0.01em] leading-none">ReportBeacon</div>
             <div className="text-[11.5px] text-[var(--muted)] mt-0.5">Account console</div>
           </div>
         </div>

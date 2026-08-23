@@ -94,7 +94,7 @@ export default function Integrations() {
 
         <div className="mt-4 pt-4 border-t border-[var(--line)] flex items-center justify-between gap-3 flex-wrap">
           <span className="text-[12.5px] text-[var(--ink-2)]">{connected ? 'Recommendations can now be written by the model.' : 'The built-in engine still works without a key.'}</span>
-          <Link to="/recommendations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">View recommendations <ArrowRight size={13} /></Link>
+          <Link to="/app/recommendations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">View recommendations <ArrowRight size={13} /></Link>
         </div>
       </Card>
 

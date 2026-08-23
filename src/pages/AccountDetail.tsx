@@ -29,8 +29,8 @@ export default function AccountDetail() {
   const [tab, setTab] = useState<'overview' | PlatformId>('overview')
   const loading = useLoading([id, range], 450)
 
-  if (!account) return <NotFound onBack={() => navigate('/')} title="That account does not exist." />
-  if (seat && !seatCanSee(seat, account.id)) return <NotFound onBack={() => navigate('/')} title="This account is outside your book." icon />
+  if (!account) return <NotFound onBack={() => navigate('/app')} title="That account does not exist." />
+  if (seat && !seatCanSee(seat, account.id)) return <NotFound onBack={() => navigate('/app')} title="This account is outside your book." icon />
 
   if (loading) {
     return (
@@ -47,7 +47,7 @@ export default function AccountDetail() {
 
   return (
     <div className="flex flex-col gap-5">
-      <Link to="/" className="inline-flex items-center gap-1.5 text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)] w-fit"><ArrowLeft size={14} /> Portfolio</Link>
+      <Link to="/app" className="inline-flex items-center gap-1.5 text-[12.5px] text-[var(--ink-2)] hover:text-[var(--ink)] w-fit"><ArrowLeft size={14} /> Portfolio</Link>
 
       <Reveal>
         <div className="flex flex-wrap items-center gap-4">
@@ -58,7 +58,7 @@ export default function AccountDetail() {
           </div>
           <div className="ml-auto flex items-center gap-2.5">
             <Segmented value={range} onChange={setRange} options={RANGES.map((r) => ({ value: r.id, label: r.label }))} />
-            <Button variant="primary" className="press" onClick={() => navigate(`/reports?account=${account.id}`)}><FileText size={15} /> Export report</Button>
+            <Button variant="primary" className="press" onClick={() => navigate(`/app/reports?account=${account.id}`)}><FileText size={15} /> Export report</Button>
           </div>
         </div>
       </Reveal>

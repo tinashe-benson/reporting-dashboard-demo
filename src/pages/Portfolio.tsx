@@ -44,10 +44,10 @@ export default function Portfolio() {
       </Reveal>
 
       <Reveal delay={0.06}>
-        <SectionTitle right={<Button variant="ghost" onClick={() => navigate('/alerts')}>View all alerts <ArrowRight size={15} /></Button>}>Needs attention</SectionTitle>
+        <SectionTitle right={<Button variant="ghost" onClick={() => navigate('/app/alerts')}>View all alerts <ArrowRight size={15} /></Button>}>Needs attention</SectionTitle>
         <Card>
           {alerts.slice(0, 4).map((al, i) => (
-            <Link key={al.id} to={`/accounts/${al.accountId}`} className={`flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface-2)] transition-colors ${i > 0 ? 'border-t border-[var(--line)]' : ''}`}>
+            <Link key={al.id} to={`/app/accounts/${al.accountId}`} className={`flex items-center gap-3 px-4 py-3 hover:bg-[var(--surface-2)] transition-colors ${i > 0 ? 'border-t border-[var(--line)]' : ''}`}>
               <SeverityDot severity={al.severity} />
               <div className="min-w-0 flex-1">
                 <div className="text-[13px] font-semibold text-[var(--ink)]">{al.title}</div>

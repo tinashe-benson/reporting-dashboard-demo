@@ -26,7 +26,7 @@ export default function Settings() {
             <div className="text-[14px] font-semibold">{seat?.name}</div>
             <div className="text-[12px] text-[var(--muted)]">{seat?.title} · {seat?.role === 'owner' ? 'all accounts' : `${seat ? accountsForSeat(seat).length : 0} accounts`}</div>
           </div>
-          <Button onClick={() => { signOut(); navigate('/') }}><LogOut size={15} /> Sign out</Button>
+          <Button onClick={() => { signOut(); navigate('/app') }}><LogOut size={15} /> Sign out</Button>
         </div>
       </Card>
 
@@ -43,7 +43,7 @@ export default function Settings() {
       <Card className="p-5">
         <div className="text-[13px] font-bold mb-4">AI recommendations</div>
         <Row label="OpenRouter model" hint={ai.key ? 'Connected' : 'Not connected'}>
-          <Link to="/integrations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">
+          <Link to="/app/integrations" className="text-[12.5px] font-semibold text-[var(--accent)] inline-flex items-center gap-1">
             {ai.key ? connectedModel?.label : 'Connect'} <ArrowRight size={13} />
           </Link>
         </Row>

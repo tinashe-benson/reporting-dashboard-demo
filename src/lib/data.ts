@@ -1,5 +1,5 @@
 /**
- * Mock data for Reportbeacon, an internal account-reporting console.
+ * Mock data for ReportBeacon, an internal account-reporting console.
  *
  * No backend and no live integrations. Each account carries 60 days of daily
  * leads and spend so the range controls (7d / 30d / month-to-date) and the

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* =========================================================================
-   Reportbeacon — "Field Ops Console" design tokens.
+   ReportBeacon — "Field Ops Console" design tokens.
    Light-first, high-contrast. Full light + dark. Three theme states:
    bare :root = light; prefers-color-scheme:dark (guarded) = OS dark;
    [data-theme] wins both ways via the theme toggle.

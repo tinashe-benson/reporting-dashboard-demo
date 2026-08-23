@@ -1,4 +1,4 @@
-/** Reportbeacon UI kit. Flat, high-contrast primitives built on the tokens. */
+/** ReportBeacon UI kit. Flat, high-contrast primitives built on the tokens. */
 import type { ReactNode } from 'react'
 import { pctAbs } from '@/lib/format'
 import type { Health, Severity, SourceStatus } from '@/lib/data'

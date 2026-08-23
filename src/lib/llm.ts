@@ -59,7 +59,7 @@ export async function generateLive(a: Account, cfg: AIConfig): Promise<Recommend
       Authorization: `Bearer ${cfg.key}`,
       'Content-Type': 'application/json',
       'HTTP-Referer': typeof location !== 'undefined' ? location.origin : 'https://reportbeacon.app',
-      'X-Title': 'Reportbeacon',
+      'X-Title': 'ReportBeacon',
     },
     body: JSON.stringify({
       model: cfg.model,

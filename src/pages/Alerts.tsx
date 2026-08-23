@@ -27,7 +27,7 @@ export default function Alerts() {
             </div>
             <Card>
               {items.map((al, i) => (
-                <Link key={al.id} to={`/accounts/${al.accountId}`} className={`flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--surface-2)] transition-colors ${i > 0 ? 'border-t border-[var(--line)]' : ''}`}>
+                <Link key={al.id} to={`/app/accounts/${al.accountId}`} className={`flex items-center gap-3 px-4 py-3.5 hover:bg-[var(--surface-2)] transition-colors ${i > 0 ? 'border-t border-[var(--line)]' : ''}`}>
                   <div className="min-w-0 flex-1">
                     <div className="text-[13px] font-semibold">{al.title}</div>
                     <div className="text-[11.5px] text-[var(--ink-2)]">{al.detail}</div>

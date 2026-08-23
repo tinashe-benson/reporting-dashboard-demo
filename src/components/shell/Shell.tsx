@@ -3,31 +3,32 @@ import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import {
   LayoutGrid, Users, Bell, FileText, Cable, Settings as SettingsIcon, Lightbulb,
-  PanelLeftClose, PanelLeftOpen, Menu, X, Sun, Moon, RadioTower, LogOut,
+  PanelLeftClose, PanelLeftOpen, Menu, X, Sun, Moon, LogOut,
 } from 'lucide-react'
 import { useApp } from '@/context/app'
 import { accountsForSeat, allAlerts, ACCOUNTS } from '@/lib/data'
 import { IconButton } from '@/components/ui/kit'
+import { Logo } from '@/components/Logo'
 
 const NAV = [
-  { to: '/', label: 'Portfolio', icon: LayoutGrid, end: true },
-  { to: '/accounts', label: 'Accounts', icon: Users },
-  { to: '/recommendations', label: 'Recommendations', icon: Lightbulb },
-  { to: '/alerts', label: 'Alerts', icon: Bell, badge: true },
-  { to: '/reports', label: 'Reports', icon: FileText },
+  { to: '/app', label: 'Portfolio', icon: LayoutGrid, end: true },
+  { to: '/app/accounts', label: 'Accounts', icon: Users },
+  { to: '/app/recommendations', label: 'Recommendations', icon: Lightbulb },
+  { to: '/app/alerts', label: 'Alerts', icon: Bell, badge: true },
+  { to: '/app/reports', label: 'Reports', icon: FileText },
 ]
 const NAV_2 = [
-  { to: '/integrations', label: 'Integrations', icon: Cable },
-  { to: '/settings', label: 'Settings', icon: SettingsIcon },
+  { to: '/app/integrations', label: 'Integrations', icon: Cable },
+  { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
 const TITLES: Record<string, string> = {
-  '/': 'Portfolio', '/accounts': 'Accounts', '/recommendations': 'Recommendations', '/alerts': 'Alerts',
-  '/reports': 'Reports', '/integrations': 'Integrations', '/settings': 'Settings',
+  '/app': 'Portfolio', '/app/accounts': 'Accounts', '/app/recommendations': 'Recommendations', '/app/alerts': 'Alerts',
+  '/app/reports': 'Reports', '/app/integrations': 'Integrations', '/app/settings': 'Settings',
 }
 function pageTitle(path: string): string {
-  if (path.startsWith('/accounts/')) return 'Account'
-  return TITLES[path] ?? 'Reportbeacon'
+  if (path.startsWith('/app/accounts/')) return 'Account'
+  return TITLES[path] ?? 'ReportBeacon'
 }
 
 export default function Shell() {
@@ -40,7 +41,7 @@ export default function Shell() {
   useEffect(() => { setMobileNavOpen(false) }, [location.pathname, setMobileNavOpen])
 
   const railWidth = navCollapsed ? 'lg:w-[68px]' : 'lg:w-[236px]'
-  const doSignOut = () => { signOut(); navigate('/') }
+  const doSignOut = () => { signOut(); navigate('/app') }
 
   return (
     <div className="min-h-screen">
@@ -56,7 +57,7 @@ export default function Shell() {
           {/* Seat + collapse */}
           <div className="mt-auto border-t border-[var(--line)] p-2">
             <div className={`flex items-center gap-2.5 px-2 py-2 ${navCollapsed ? 'lg:justify-center lg:px-0' : ''}`}>
-              <span className="w-8 h-8 rounded-full grid place-items-center flex-none text-[12px] font-bold text-white" style={{ background: seat?.role === 'owner' ? 'var(--ink)' : 'var(--accent)' }}>{seat?.initials ?? '—'}</span>
+              <span className="w-8 h-8 rounded-full grid place-items-center flex-none text-[12px] font-bold text-white" style={{ background: seat?.role === 'owner' ? 'var(--ink)' : 'var(--accent)' }}>{seat?.initials ?? '-'}</span>
               {!navCollapsed && (
                 <div className="min-w-0 flex-1">
                   <div className="text-[12.5px] font-semibold truncate">{seat?.name}</div>
@@ -104,10 +105,10 @@ function Rail({ collapsed, alertCount, onCloseMobile }: { collapsed: boolean; al
   return (
     <>
       <div className={`flex items-center gap-2.5 px-4 pt-4 pb-4 ${collapsed ? 'lg:justify-center lg:px-0' : ''}`}>
-        <div className="w-[30px] h-[30px] rounded-[8px] bg-[var(--ink)] text-[var(--surface)] grid place-items-center flex-none"><RadioTower size={17} /></div>
+        <Logo size={30} />
         {!collapsed && (
           <div>
-            <div className="font-bold text-[14.5px] tracking-[-0.01em] leading-none">Reportbeacon</div>
+            <div className="font-bold text-[14.5px] tracking-[-0.01em] leading-none">ReportBeacon</div>
             <div className="text-[11px] text-[var(--muted)] mt-0.5">Account console</div>
           </div>
         )}

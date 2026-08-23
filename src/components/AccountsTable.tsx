@@ -90,7 +90,7 @@ export default function AccountsTable({ range, accounts = ACCOUNTS, showManager 
                   <td className="px-3.5 py-3"><PacingBar pct={p.pct} spendLabel={moneyK(p.mtd)} /></td>
                   <td className="px-3.5 py-3"><Sparkline data={a.leadsDaily.slice(-30).filter((_, i) => i % 3 === 0)} color={a.color} /></td>
                   <td className="px-3.5 py-3 text-right"><span className="mono text-[13.5px] font-semibold">{a.gbp.rating.toFixed(1)}</span></td>
-                  {showManager && <td className="px-3.5 py-3"><span className="text-[12px] text-[var(--ink-2)]">{mgr?.name.split(' ')[0] ?? '—'}</span></td>}
+                  {showManager && <td className="px-3.5 py-3"><span className="text-[12px] text-[var(--ink-2)]">{mgr?.name.split(' ')[0] ?? '-'}</span></td>}
                   <td className="px-2 py-3 text-right"><ChevronRight size={16} className={`text-[var(--muted)] transition-transform ${open ? 'rotate-90' : ''}`} /></td>
                 </tr>
                 <tr>
@@ -112,7 +112,7 @@ export default function AccountsTable({ range, accounts = ACCOUNTS, showManager 
                           )}
                           <div className="flex items-center gap-3 ml-auto">
                             <SourceDots sources={a.sources} />
-                            <Button variant="primary" className="press" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navigate(`/accounts/${a.id}`) }}>
+                            <Button variant="primary" className="press" onClick={(e: React.MouseEvent) => { e.stopPropagation(); navigate(`/app/accounts/${a.id}`) }}>
                               Open account <ArrowRight size={14} />
                             </Button>
                           </div>
