@@ -9,7 +9,8 @@ import { useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import { Printer, Check } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { accountsForSeat, ACCOUNTS, getAccount, metricsFor, pacing, RANGES, type Account, type RangeId } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { metricsFor, pacing, RANGES, type Account, type RangeId } from '@/lib/data'
 import { money, money2, num, compact } from '@/lib/format'
 import { Card, Button, Toggle, Segmented } from '@/components/ui/kit'
 import { Logo } from '@/components/Logo'
@@ -42,20 +43,25 @@ function reportingPeriod(range: RangeId): { period: string; compared: string; pr
 
 export default function Reports() {
   const [params] = useSearchParams()
-  const { range, setRange, seat } = useApp()
-  const scope = seat ? accountsForSeat(seat) : ACCOUNTS
+  const { range, setRange } = useApp()
+  const { me, accountsForSeat, getClient } = useWorkspace()
+  const scope = me ? accountsForSeat(me) : []
   const paramAcct = params.get('account') || ''
-  const initial = scope.some((a) => a.id === paramAcct) ? paramAcct : scope[0].id
+  const initial = scope.some((a) => a.id === paramAcct) ? paramAcct : (scope[0]?.id ?? '')
   const [accountId, setAccountId] = useState(initial)
   const [title, setTitle] = useState('Performance report')
   const [sections, setSections] = useState<Record<SectionKey, boolean>>({ headline: true, channels: true, google: true, search: true, summary: true })
 
-  const account = getAccount(accountId)!
-  const m = useMemo(() => metricsFor(account, range), [account, range])
+  const account = getClient(accountId) ?? scope[0]
+  const m = useMemo(() => (account ? metricsFor(account, range) : null), [account, range])
+  const dates = useMemo(() => reportingPeriod(range), [range])
+
+  if (!account || !m) {
+    return <Card className="p-10 text-center text-[13px] text-[var(--muted)] max-w-[520px]">No clients to report on yet. Import a client from Integrations first.</Card>
+  }
   const p = pacing(account)
   const active = SECTIONS.filter((s) => sections[s.key])
   const rangeLabel = RANGES.find((r) => r.id === range)!.label
-  const dates = useMemo(() => reportingPeriod(range), [range])
 
   return (
     <div className="grid lg:grid-cols-[300px_1fr] gap-6">

@@ -2,11 +2,12 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import {
-  LayoutGrid, Users, Bell, FileText, Cable, Settings as SettingsIcon, Lightbulb,
+  LayoutGrid, Users, Bell, FileText, Cable, Settings as SettingsIcon, Lightbulb, UsersRound,
   PanelLeftClose, PanelLeftOpen, Menu, X, Sun, Moon, LogOut,
 } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { accountsForSeat, allAlerts, ACCOUNTS } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { allAlerts } from '@/lib/data'
 import { IconButton } from '@/components/ui/kit'
 import { Logo } from '@/components/Logo'
 
@@ -17,14 +18,10 @@ const NAV = [
   { to: '/app/alerts', label: 'Alerts', icon: Bell, badge: true },
   { to: '/app/reports', label: 'Reports', icon: FileText },
 ]
-const NAV_2 = [
-  { to: '/app/integrations', label: 'Integrations', icon: Cable },
-  { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
-]
 
 const TITLES: Record<string, string> = {
   '/app': 'Portfolio', '/app/accounts': 'Accounts', '/app/recommendations': 'Recommendations', '/app/alerts': 'Alerts',
-  '/app/reports': 'Reports', '/app/integrations': 'Integrations', '/app/settings': 'Settings',
+  '/app/reports': 'Reports', '/app/integrations': 'Integrations', '/app/settings': 'Settings', '/app/team': 'Team & access',
 }
 function pageTitle(path: string): string {
   if (path.startsWith('/app/accounts/')) return 'Account'
@@ -32,11 +29,19 @@ function pageTitle(path: string): string {
 }
 
 export default function Shell() {
-  const { navCollapsed, toggleNav, mobileNavOpen, setMobileNavOpen, theme, toggleTheme, seat, signOut } = useApp()
+  const { navCollapsed, toggleNav, mobileNavOpen, setMobileNavOpen, theme, toggleTheme, signOut } = useApp()
+  const { me, isAdmin, accountsForSeat } = useWorkspace()
   const location = useLocation()
   const navigate = useNavigate()
-  const scoped = seat ? accountsForSeat(seat) : ACCOUNTS
+  const scoped = me ? accountsForSeat(me) : []
   const alertCount = allAlerts(scoped).length
+  const seat = me
+
+  const NAV_2 = [
+    ...(isAdmin ? [{ to: '/app/team', label: 'Team & access', icon: UsersRound }] : []),
+    { to: '/app/integrations', label: 'Integrations', icon: Cable },
+    { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
+  ]
 
   useEffect(() => { setMobileNavOpen(false) }, [location.pathname, setMobileNavOpen])
 
@@ -52,7 +57,7 @@ export default function Shell() {
           className={`no-print fixed lg:sticky top-0 z-50 lg:z-auto h-screen flex flex-col bg-[var(--surface)] border-r border-[var(--line)] transition-all duration-200 ${railWidth} w-[236px]
             ${mobileNavOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
         >
-          <Rail collapsed={navCollapsed} alertCount={alertCount} onCloseMobile={() => setMobileNavOpen(false)} />
+          <Rail collapsed={navCollapsed} alertCount={alertCount} nav2={NAV_2} onCloseMobile={() => setMobileNavOpen(false)} />
 
           {/* Seat + collapse */}
           <div className="mt-auto border-t border-[var(--line)] p-2">
@@ -101,7 +106,7 @@ export default function Shell() {
   )
 }
 
-function Rail({ collapsed, alertCount, onCloseMobile }: { collapsed: boolean; alertCount: number; onCloseMobile: () => void }) {
+function Rail({ collapsed, alertCount, nav2, onCloseMobile }: { collapsed: boolean; alertCount: number; nav2: { to: string; label: string; icon: any }[]; onCloseMobile: () => void }) {
   return (
     <>
       <div className={`flex items-center gap-2.5 px-4 pt-4 pb-4 ${collapsed ? 'lg:justify-center lg:px-0' : ''}`}>
@@ -116,7 +121,7 @@ function Rail({ collapsed, alertCount, onCloseMobile }: { collapsed: boolean; al
       </div>
       <nav className="flex-1 overflow-y-auto clip-scroll px-2.5">
         <NavGroup collapsed={collapsed} label="Workspace" items={NAV} alertCount={alertCount} />
-        <NavGroup collapsed={collapsed} label="Configure" items={NAV_2} alertCount={alertCount} />
+        <NavGroup collapsed={collapsed} label="Configure" items={nav2} alertCount={alertCount} />
       </nav>
     </>
   )

@@ -2,17 +2,20 @@
 import { Fragment, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ChevronRight, ArrowUpDown, ArrowRight } from 'lucide-react'
-import { ACCOUNTS, metricsFor, pacing, health, managerFor, type Account, type RangeId, type Health } from '@/lib/data'
+import { metricsFor, pacing, health, type Account, type RangeId, type Health } from '@/lib/data'
 import { money, money2, moneyK, num } from '@/lib/format'
 import { recommendationsFor } from '@/lib/recommend'
+import { useWorkspace } from '@/context/workspace'
 import { Card, HealthBadge, Delta, PacingBar, SourceDots, Sparkline, Button, PriorityDot } from '@/components/ui/kit'
 import { Collapse } from '@/components/ui/disclosure'
 
 type SortKey = 'name' | 'health' | 'leads' | 'cpl' | 'pacing' | 'rating'
 const HEALTH_RANK: Record<Health, number> = { risk: 0, watch: 1, good: 2 }
 
-export default function AccountsTable({ range, accounts = ACCOUNTS, showManager = false }: { range: RangeId; accounts?: Account[]; showManager?: boolean }) {
+export default function AccountsTable({ range, accounts, showManager = false }: { range: RangeId; accounts: Account[]; showManager?: boolean }) {
   const navigate = useNavigate()
+  const { managerFor, isAdmin, members, assignClient } = useWorkspace()
+  const managers = members.filter((mm) => mm.role === 'manager')
   const [sort, setSort] = useState<SortKey>('health')
   const [dir, setDir] = useState<1 | -1>(1)
   const [openId, setOpenId] = useState<string | null>(null)
@@ -102,6 +105,22 @@ export default function AccountsTable({ range, accounts = ACCOUNTS, showManager 
                           <Peek label="Cost / lead" value={money2(m.cpl)} />
                           <Peek label="Spend · 30d" value={money(m.spend)} />
                           <Peek label="Pacing" value={p.pct + '%'} />
+                        </div>
+                        <div className="flex items-center gap-2 mb-3 text-[12.5px]">
+                          <span className="text-[var(--muted)]">Owner</span>
+                          {isAdmin ? (
+                            <select
+                              value={managerFor(a.id)?.id ?? ''}
+                              onClick={(e) => e.stopPropagation()}
+                              onChange={(e) => { e.stopPropagation(); assignClient(a.id, e.target.value) }}
+                              className="bg-[var(--surface)] border border-[var(--line-2)] rounded-[7px] px-2 py-1 text-[12.5px] text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]"
+                            >
+                              <option value="">Unassigned</option>
+                              {managers.map((mm) => <option key={mm.id} value={mm.id}>{mm.name}</option>)}
+                            </select>
+                          ) : (
+                            <span className="font-medium">{managerFor(a.id)?.name ?? 'Unassigned'}</span>
+                          )}
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
                           {topRec && (

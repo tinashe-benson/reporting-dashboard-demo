@@ -51,20 +51,9 @@ export function getSeat(id: string): Seat | undefined {
   return SEATS.find((s) => s.id === id)
 }
 
-/** Accounts a seat is allowed to see. */
-export function accountsForSeat(seat: Seat): Account[] {
-  if (seat.role === 'owner') return ACCOUNTS
-  return ACCOUNTS.filter((a) => seat.accountIds.includes(a.id))
-}
-
-export function seatCanSee(seat: Seat, accountId: string): boolean {
-  return seat.role === 'owner' || seat.accountIds.includes(accountId)
-}
-
-/** Which manager owns an account (for the owner's roster view). */
-export function managerFor(accountId: string): Seat | undefined {
-  return SEATS.find((s) => s.role === 'manager' && s.accountIds.includes(accountId))
-}
+// Ownership, scoping and the live roster are dynamic and live in the workspace
+// store (src/context/workspace.tsx), which seeds itself from SEATS' accountIds
+// and the imported catalog below.
 
 // ---------------------------------------------------------------------------
 // Platforms
@@ -292,9 +281,67 @@ export const ACCOUNTS: Account[] = [
   },
 ]
 
+/**
+ * Additional client accounts that exist in the connected platforms but have
+ * not been imported into the workspace yet. Connecting a source in the demo
+ * "discovers" these so they can be imported and assigned.
+ */
+export const IMPORTABLE: Account[] = [
+  {
+    id: 'lakeside-vet',
+    name: 'Lakeside Veterinary',
+    trade: 'Med spa',
+    location: 'Seattle, WA',
+    mark: 'LV',
+    color: '#0e9e8f',
+    budget: 5200,
+    retainer: 1600,
+    lastSyncedMin: 2,
+    leadsDaily: series(51, 176, 0.061),
+    spendDaily: series(52, 4980, 0.03),
+    sources: { lsa: 'live', googleAds: 'live', gbp: 'live', meta: 'live', semrush: 'live' },
+    lsa: { leads: 88, cpl: 24.6, guaranteed: true, responseMins: 3.6, series: short(53, 20, 4, 0.3) },
+    googleAds: { spend: 2760, clicks: 1420, conversions: 61, costPerConv: 45.2, series: short(54, 14, 3, 0.3) },
+    gbp: { rating: 4.8, ratingPrev: 4.7, reviews: 356, reviewDelta: 19, views: 9800, directions: 221, series: short(55, 4.6, 0.05, 0.02) },
+    meta: { spend: 1220, results: 41, costPerResult: 29.8, reach: 22400, series: short(56, 9, 2.5, 0.2) },
+    semrush: {
+      keywords: 118, visibility: 31.4, visibilityDelta: 2.9, series: short(57, 27, 2, 0.7),
+      gaining: [{ term: 'emergency vet seattle', from: 13, to: 5 }, { term: 'cat dental cleaning', from: 18, to: 9 }],
+      losing: [{ term: 'dog vaccinations near me', from: 7, to: 11 }],
+    },
+  },
+  {
+    id: 'summit-realty',
+    name: 'Summit Realty Group',
+    trade: 'Legal',
+    location: 'Nashville, TN',
+    mark: 'SR',
+    color: '#c2410c',
+    budget: 9400,
+    retainer: 2400,
+    lastSyncedMin: 5,
+    leadsDaily: series(61, 214, 0.144),
+    spendDaily: series(62, 8600, 0.09),
+    sources: { lsa: 'live', googleAds: 'live', gbp: 'live', meta: 'live', semrush: 'syncing' },
+    lsa: { leads: 64, cpl: 58.2, guaranteed: false, responseMins: 4.4, series: short(63, 13, 4, 0.4) },
+    googleAds: { spend: 5100, clicks: 1880, conversions: 78, costPerConv: 65.4, series: short(64, 17, 4, 0.5) },
+    gbp: { rating: 4.6, ratingPrev: 4.6, reviews: 274, reviewDelta: 12, views: 12600, directions: 188, series: short(65, 4.5, 0.05, 0.01) },
+    meta: { spend: 2010, results: 52, costPerResult: 38.7, reach: 31200, series: short(66, 11, 3, 0.4) },
+    semrush: {
+      keywords: 162, visibility: 27.1, visibilityDelta: 5.2, series: short(67, 20, 2.3, 1.1),
+      gaining: [{ term: 'homes for sale nashville', from: 16, to: 6 }, { term: 'realtor near me', from: 21, to: 10 }],
+      losing: [{ term: 'condos downtown nashville', from: 8, to: 13 }],
+    },
+  },
+]
+
+/** Every client account known across connected platforms. */
+export const CATALOG: Account[] = [...ACCOUNTS, ...IMPORTABLE]
+
 export function getAccount(id: string): Account | undefined {
-  return ACCOUNTS.find((a) => a.id === id)
+  return CATALOG.find((a) => a.id === id)
 }
+
 
 // ---------------------------------------------------------------------------
 // Derived metrics

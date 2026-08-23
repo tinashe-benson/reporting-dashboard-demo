@@ -8,8 +8,9 @@ import {
   ArrowLeft, FileText, ShieldCheck, Timer, TrendingUp, TrendingDown, Lock, LineChart, Cable, Wallet,
 } from 'lucide-react'
 import { useApp } from '@/context/app'
+import { useWorkspace } from '@/context/workspace'
 import {
-  getAccount, seatCanSee, metricsFor, pacing, health, alertsFor, PLATFORMS, RANGES, type Account, type PlatformId,
+  metricsFor, pacing, health, alertsFor, PLATFORMS, RANGES, type Account, type PlatformId,
 } from '@/lib/data'
 import { money, money2, moneyK, num, compact } from '@/lib/format'
 import { useLoading } from '@/lib/useLoading'
@@ -23,14 +24,15 @@ const TOOLTIP = { background: 'var(--surface)', border: '1px solid var(--line)',
 
 export default function AccountDetail() {
   const { id = '' } = useParams()
-  const account = getAccount(id)
-  const { range, setRange, seat } = useApp()
+  const { range, setRange } = useApp()
+  const { me, isAdmin, getClient, canSee } = useWorkspace()
+  const account = getClient(id)
   const navigate = useNavigate()
   const [tab, setTab] = useState<'overview' | PlatformId>('overview')
   const loading = useLoading([id, range], 450)
 
   if (!account) return <NotFound onBack={() => navigate('/app')} title="That account does not exist." />
-  if (seat && !seatCanSee(seat, account.id)) return <NotFound onBack={() => navigate('/app')} title="This account is outside your book." icon />
+  if (me && !canSee(me, account.id)) return <NotFound onBack={() => navigate('/app')} title="This account is outside your book." icon />
 
   if (loading) {
     return (
@@ -43,7 +45,7 @@ export default function AccountDetail() {
   }
 
   const alerts = alertsFor(account)
-  const ownerView = seat?.role === 'owner'
+  const ownerView = isAdmin
 
   return (
     <div className="flex flex-col gap-5">

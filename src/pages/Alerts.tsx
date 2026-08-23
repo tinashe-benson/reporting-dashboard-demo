@@ -1,16 +1,16 @@
 /** Alerts: every open exception across the roster, most severe first. */
 import { Link } from 'react-router'
 import { ArrowRight } from 'lucide-react'
-import { useApp } from '@/context/app'
-import { accountsForSeat, allAlerts, ACCOUNTS, type Severity } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { allAlerts, type Severity } from '@/lib/data'
 import { Card, SeverityDot, Chip } from '@/components/ui/kit'
 import { Reveal } from '@/components/ui/disclosure'
 
 const SEV_LABEL: Record<Severity, string> = { serious: 'At risk', warning: 'Watch', info: 'Info' }
 
 export default function Alerts() {
-  const { seat } = useApp()
-  const alerts = allAlerts(seat ? accountsForSeat(seat) : ACCOUNTS)
+  const { me, accountsForSeat } = useWorkspace()
+  const alerts = allAlerts(me ? accountsForSeat(me) : [])
   const groups: Severity[] = ['serious', 'warning', 'info']
 
   return (

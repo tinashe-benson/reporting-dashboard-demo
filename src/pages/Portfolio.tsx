@@ -2,7 +2,8 @@
 import { Link, useNavigate } from 'react-router'
 import { ArrowRight } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { accountsForSeat, ACCOUNTS, RANGES, allAlerts, portfolioTotals } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { RANGES, allAlerts, portfolioTotals } from '@/lib/data'
 import { money, money2, moneyK, num } from '@/lib/format'
 import { useLoading } from '@/lib/useLoading'
 import { Card, Stat, Segmented, Button, SectionTitle, SeverityDot, Chip, KpiSkeleton, TableSkeleton } from '@/components/ui/kit'
@@ -10,14 +11,16 @@ import { Reveal } from '@/components/ui/disclosure'
 import AccountsTable from '@/components/AccountsTable'
 
 export default function Portfolio() {
-  const { range, setRange, seat } = useApp()
+  const { range, setRange } = useApp()
+  const { me, isAdmin, accountsForSeat, members } = useWorkspace()
   const navigate = useNavigate()
-  const isOwner = seat?.role === 'owner'
-  const accounts = seat ? accountsForSeat(seat) : ACCOUNTS
+  const isOwner = isAdmin
+  const accounts = me ? accountsForSeat(me) : []
   const t = portfolioTotals(range, accounts)
   const alerts = allAlerts(accounts)
-  const loading = useLoading([seat?.id, range], 420)
+  const loading = useLoading([me?.id, range], 420)
 
+  const managerCount = members.filter((mm) => mm.role === 'manager').length
   const retainerTotal = accounts.reduce((s, a) => s + a.retainer, 0)
   const marginEst = Math.round(retainerTotal * 0.62)
 
@@ -73,7 +76,7 @@ export default function Portfolio() {
             <Stat label="Recurring retainer · mo" value={money(retainerTotal)} note={`Across ${accounts.length} accounts`} />
             <Stat label="Managed ad budget" value={money(accounts.reduce((s, a) => s + a.budget, 0))} note="Monthly, pass-through" />
             <Stat label="Est. gross margin" value={money(marginEst)} note="After delivery cost" />
-            <Stat label="Books managed" value={<span className="text-[15px] text-[var(--ink-2)] font-semibold">Dana · Marcus</span>} note="2 account managers" />
+            <Stat label="Books managed" value={num(managerCount)} note={`${managerCount === 1 ? 'account manager' : 'account managers'}`} />
           </div>
         </Reveal>
       )}

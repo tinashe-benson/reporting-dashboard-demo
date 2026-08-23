@@ -1,15 +1,14 @@
 /** Recommendations across the seat's accounts, with optional live model. */
-import { useApp } from '@/context/app'
-import { accountsForSeat, ACCOUNTS } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
 import { useLoading } from '@/lib/useLoading'
 import { Reveal } from '@/components/ui/disclosure'
 import { KpiSkeleton } from '@/components/ui/kit'
 import { RecommendationsPanel } from '@/components/Recommendations'
 
 export default function RecommendationsPage() {
-  const { seat } = useApp()
-  const accounts = seat ? accountsForSeat(seat) : ACCOUNTS
-  const loading = useLoading([seat?.id], 400)
+  const { me, accountsForSeat } = useWorkspace()
+  const accounts = me ? accountsForSeat(me) : []
+  const loading = useLoading([me?.id], 400)
 
   if (loading) {
     return (

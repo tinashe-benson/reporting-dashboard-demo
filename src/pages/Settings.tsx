@@ -4,13 +4,16 @@ import { useNavigate, Link } from 'react-router'
 import { toast } from 'sonner'
 import { LogOut, ArrowRight } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { RANGES, accountsForSeat } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { RANGES } from '@/lib/data'
 import { MODELS } from '@/lib/llm'
 import { Card, Segmented, Toggle, Button } from '@/components/ui/kit'
 import { Reveal } from '@/components/ui/disclosure'
 
 export default function Settings() {
-  const { theme, setTheme, range, setRange, seat, signOut, ai } = useApp()
+  const { theme, setTheme, range, setRange, signOut, ai } = useApp()
+  const { me, accountsForSeat } = useWorkspace()
+  const seat = me
   const navigate = useNavigate()
   const [alertEmail, setAlertEmail] = useState(true)
   const [weeklyDigest, setWeeklyDigest] = useState(false)

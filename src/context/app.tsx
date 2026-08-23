@@ -3,8 +3,8 @@
  * range, nav collapse, and the OpenRouter AI config. Persisted to
  * localStorage so a reload keeps the operator where they were.
  */
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { getSeat, type RangeId, type RoleId, type Seat } from '@/lib/data'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { type RangeId } from '@/lib/data'
 
 type Theme = 'light' | 'dark'
 export interface AIConfigState { key: string; model: string }
@@ -15,8 +15,6 @@ interface AppState {
   setTheme: (t: Theme) => void
 
   seatId: string | null
-  seat: Seat | null
-  role: RoleId
   login: (id: string) => void
   signOut: () => void
 
@@ -66,14 +64,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     writeLS('rb-theme', theme)
   }, [theme])
 
-  const seat = useMemo(() => (seatId ? getSeat(seatId) ?? null : null), [seatId])
-  const role: RoleId = seat?.role ?? 'manager'
-
   const value: AppState = {
     theme,
     toggleTheme: () => setThemeState((t) => (t === 'dark' ? 'light' : 'dark')),
     setTheme: setThemeState,
-    seatId, seat, role,
+    seatId,
     login: (id) => { setSeatId(id); writeLS('rb-seat', id) },
     signOut: () => { setSeatId(null); writeLS('rb-seat', null) },
     range,

@@ -13,6 +13,7 @@ import Alerts from '@/pages/Alerts'
 import Reports from '@/pages/Reports'
 import Integrations from '@/pages/Integrations'
 import Settings from '@/pages/Settings'
+import Team from '@/pages/Team'
 
 export default function App() {
   const { theme, seatId } = useApp()
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="alerts" element={<Alerts />} />
             <Route path="reports" element={<Reports />} />
             <Route path="integrations" element={<Integrations />} />
+            <Route path="team" element={<Team />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/app" replace />} />
           </Route>

@@ -3,11 +3,12 @@ import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router'
 import { ArrowRight, ArrowLeft } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { SEATS, accountsForSeat } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
 import { Logo } from '@/components/Logo'
 
 export default function Login() {
   const { login } = useApp()
+  const { members, clientCount } = useWorkspace()
   const navigate = useNavigate()
 
   function pick(id: string) {
@@ -35,8 +36,8 @@ export default function Login() {
         <p className="text-[13px] text-[var(--ink-2)] mb-5">Demo workspace, no password. You will see only the accounts assigned to your seat.</p>
 
         <div className="flex flex-col gap-2.5">
-          {SEATS.map((s, i) => {
-            const count = s.role === 'owner' ? 'All accounts · agency economics' : `${accountsForSeat(s).length} accounts`
+          {members.map((s, i) => {
+            const count = s.role === 'owner' ? 'All accounts · agency economics' : `${clientCount(s.id)} accounts`
             return (
               <motion.button
                 key={s.id}

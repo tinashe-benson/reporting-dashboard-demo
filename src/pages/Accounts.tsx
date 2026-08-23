@@ -2,17 +2,19 @@
 import { useMemo, useState } from 'react'
 import { Search } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { accountsForSeat, ACCOUNTS, RANGES } from '@/lib/data'
+import { useWorkspace } from '@/context/workspace'
+import { RANGES } from '@/lib/data'
 import { useLoading } from '@/lib/useLoading'
 import { Segmented, TableSkeleton } from '@/components/ui/kit'
 import { Reveal } from '@/components/ui/disclosure'
 import AccountsTable from '@/components/AccountsTable'
 
 export default function Accounts() {
-  const { range, setRange, seat } = useApp()
+  const { range, setRange } = useApp()
+  const { me, isAdmin, accountsForSeat } = useWorkspace()
   const [q, setQ] = useState('')
-  const scope = seat ? accountsForSeat(seat) : ACCOUNTS
-  const loading = useLoading([seat?.id], 380)
+  const scope = me ? accountsForSeat(me) : []
+  const loading = useLoading([me?.id], 380)
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -40,7 +42,7 @@ export default function Accounts() {
         </div>
       </div>
       {filtered.length > 0 ? (
-        <AccountsTable range={range} accounts={filtered} showManager={seat?.role === 'owner'} />
+        <AccountsTable range={range} accounts={filtered} showManager={isAdmin} />
       ) : (
         <div className="text-center text-[13px] text-[var(--muted)] py-12">No accounts match “{q}”.</div>
       )}
