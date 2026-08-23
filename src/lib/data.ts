@@ -43,8 +43,8 @@ export interface Seat {
 
 export const SEATS: Seat[] = [
   { id: 'owner', name: 'Tinashe Benson', initials: 'TB', role: 'owner', title: 'Agency owner', accountIds: [] },
-  { id: 'dana', name: 'Dana Okafor', initials: 'DO', role: 'manager', title: 'Account manager', accountIds: ['summit-air', 'ironclad-roofing'] },
-  { id: 'marcus', name: 'Marcus Reyes', initials: 'MR', role: 'manager', title: 'Account manager', accountIds: ['riverrun-plumbing', 'greenshield-pest'] },
+  { id: 'dana', name: 'Dana Okafor', initials: 'DO', role: 'manager', title: 'Account manager', accountIds: ['brightside-dental', 'redline-auto'] },
+  { id: 'marcus', name: 'Marcus Reyes', initials: 'MR', role: 'manager', title: 'Account manager', accountIds: ['harbor-vine-law', 'verde-medspa'] },
 ]
 
 export function getSeat(id: string): Seat | undefined {
@@ -149,7 +149,7 @@ export interface KeywordMove {
 export interface Account {
   id: string
   name: string
-  trade: 'HVAC' | 'Plumbing' | 'Roofing' | 'Pest control'
+  trade: 'Dental' | 'Med spa' | 'Legal' | 'Auto repair'
   location: string
   mark: string
   color: string
@@ -175,11 +175,11 @@ export interface Account {
 
 export const ACCOUNTS: Account[] = [
   {
-    id: 'summit-air',
-    name: 'Summit Air & Heating',
-    trade: 'HVAC',
+    id: 'brightside-dental',
+    name: 'Brightside Dental',
+    trade: 'Dental',
     location: 'Phoenix, AZ',
-    mark: 'SA',
+    mark: 'BD',
     color: '#2a78d6',
     budget: 15000,
     retainer: 3200,
@@ -194,22 +194,22 @@ export const ACCOUNTS: Account[] = [
     semrush: {
       keywords: 214, visibility: 38.6, visibilityDelta: 4.1, series: short(17, 31, 2.2, 1.0),
       gaining: [
-        { term: 'emergency ac repair phoenix', from: 14, to: 4 },
-        { term: 'hvac tune up near me', from: 9, to: 3 },
-        { term: 'ac installation cost az', from: 22, to: 12 },
+        { term: 'invisalign phoenix', from: 14, to: 4 },
+        { term: 'emergency dentist near me', from: 9, to: 3 },
+        { term: 'dental implants cost az', from: 22, to: 12 },
       ],
       losing: [
-        { term: 'furnace repair phoenix', from: 6, to: 11 },
-        { term: 'ductless mini split install', from: 8, to: 13 },
+        { term: 'teeth whitening phoenix', from: 6, to: 11 },
+        { term: 'pediatric dentist near me', from: 8, to: 13 },
       ],
     },
   },
   {
-    id: 'greenshield-pest',
-    name: 'GreenShield Pest Control',
-    trade: 'Pest control',
+    id: 'verde-medspa',
+    name: 'Verde Med Spa',
+    trade: 'Med spa',
     location: 'Orlando, FL',
-    mark: 'GS',
+    mark: 'VM',
     color: '#1baf7a',
     budget: 7800,
     retainer: 2100,
@@ -224,21 +224,21 @@ export const ACCOUNTS: Account[] = [
     semrush: {
       keywords: 178, visibility: 34.2, visibilityDelta: 2.3, series: short(47, 30, 2.0, 0.6),
       gaining: [
-        { term: 'mosquito control orlando', from: 11, to: 4 },
-        { term: 'termite inspection near me', from: 16, to: 8 },
+        { term: 'botox orlando', from: 11, to: 4 },
+        { term: 'laser hair removal near me', from: 16, to: 8 },
       ],
       losing: [
-        { term: 'bed bug treatment orlando', from: 6, to: 10 },
-        { term: 'rodent removal', from: 7, to: 12 },
+        { term: 'chemical peel orlando', from: 6, to: 10 },
+        { term: 'coolsculpting near me', from: 7, to: 12 },
       ],
     },
   },
   {
-    id: 'riverrun-plumbing',
-    name: 'RiverRun Plumbing Co.',
-    trade: 'Plumbing',
+    id: 'harbor-vine-law',
+    name: 'Harbor & Vine Law',
+    trade: 'Legal',
     location: 'Austin, TX',
-    mark: 'RP',
+    mark: 'HV',
     color: '#eb6834',
     budget: 6000,
     retainer: 1750,
@@ -253,22 +253,22 @@ export const ACCOUNTS: Account[] = [
     semrush: {
       keywords: 96, visibility: 21.3, visibilityDelta: -1.6, series: short(27, 24, 1.8, -0.5),
       gaining: [
-        { term: 'tankless water heater austin', from: 19, to: 9 },
-        { term: 'slab leak detection', from: 15, to: 8 },
+        { term: 'car accident lawyer austin', from: 19, to: 9 },
+        { term: 'personal injury attorney', from: 15, to: 8 },
       ],
       losing: [
-        { term: 'drain cleaning austin', from: 4, to: 9 },
-        { term: 'emergency plumber near me', from: 7, to: 14 },
-        { term: 'water heater repair', from: 5, to: 10 },
+        { term: 'slip and fall lawyer austin', from: 4, to: 9 },
+        { term: 'workers comp attorney', from: 7, to: 14 },
+        { term: 'motorcycle accident lawyer', from: 5, to: 10 },
       ],
     },
   },
   {
-    id: 'ironclad-roofing',
-    name: 'Ironclad Roofing',
-    trade: 'Roofing',
+    id: 'redline-auto',
+    name: 'Redline Auto Care',
+    trade: 'Auto repair',
     location: 'Denver, CO',
-    mark: 'IR',
+    mark: 'RA',
     color: '#7a5af0',
     budget: 6800,
     retainer: 2600,
@@ -283,11 +283,11 @@ export const ACCOUNTS: Account[] = [
     semrush: {
       keywords: 143, visibility: 29.8, visibilityDelta: 6.7, series: short(37, 21, 2.4, 1.4),
       gaining: [
-        { term: 'hail damage roof repair denver', from: 17, to: 5 },
-        { term: 'metal roof installation colorado', from: 24, to: 11 },
-        { term: 'roof replacement cost denver', from: 12, to: 6 },
+        { term: 'brake repair denver', from: 17, to: 5 },
+        { term: 'transmission repair colorado', from: 24, to: 11 },
+        { term: 'check engine light diagnostic', from: 12, to: 6 },
       ],
-      losing: [{ term: 'gutter installation denver', from: 9, to: 15 }],
+      losing: [{ term: 'oil change near me denver', from: 9, to: 15 }],
     },
   },
 ]

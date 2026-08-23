@@ -50,7 +50,7 @@ function accountBrief(a: Account) {
   }
 }
 
-const SYSTEM = `You are a senior paid-media strategist at a marketing agency for home-service businesses (HVAC, plumbing, roofing, pest control). Given one account's cross-channel numbers, return 3 to 5 specific, high-leverage recommendations, prioritising budget reallocation and spend efficiency. Respond with ONLY a JSON array, no prose. Each item: {"category": one of "budget"|"optimize"|"reputation"|"seo"|"ops", "priority": "high"|"medium"|"low", "title": short imperative, "rationale": one sentence, "impact": estimated outcome, "action": 2-4 word button label}.`
+const SYSTEM = `You are a senior strategist at a marketing agency that runs paid ads, SEO and local marketing for clients across many industries. Given one client's cross-channel numbers, return 3 to 5 specific, high-leverage recommendations, prioritising budget reallocation and spend efficiency. Respond with ONLY a JSON array, no prose. Each item: {"category": one of "budget"|"optimize"|"reputation"|"seo"|"ops", "priority": "high"|"medium"|"low", "title": short imperative, "rationale": one sentence, "impact": estimated outcome, "action": 2-4 word button label}.`
 
 export async function generateLive(a: Account, cfg: AIConfig): Promise<Recommendation[]> {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {

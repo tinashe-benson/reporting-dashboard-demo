@@ -58,8 +58,8 @@ export default function Landing() {
           <h1 className="mt-6 text-[38px] md:text-[56px] font-bold tracking-[-0.03em] leading-[1.05] max-w-[820px] mx-auto" style={{ textWrap: 'balance' } as any}>
             Every client account you run, on one screen
           </h1>
-          <p className="mt-5 text-[16px] md:text-[18px] text-[var(--ink-2)] max-w-[620px] mx-auto leading-relaxed">
-            ReportBeacon pulls Local Services Ads, Google Ads, Google Business Profile, Meta and SEMrush into a single console, so an account manager can see how every home-service client is doing without opening five tabs.
+          <p className="mt-5 text-[16px] md:text-[18px] text-[var(--ink-2)] max-w-[640px] mx-auto leading-relaxed">
+            ReportBeacon brings the ad, SEO, and analytics platforms your agency already runs into one console. Every metric you pull together for a client report, in one place, so your team stops stitching screenshots from a dozen tabs.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link to="/app" className="inline-flex items-center gap-2 text-[15px] font-semibold px-5 py-3 rounded-[10px] bg-[var(--accent)] text-white hover:opacity-90 transition-opacity">
@@ -86,11 +86,12 @@ export default function Landing() {
       {/* Platform row */}
       <Rise>
         <section className="mx-auto max-w-[1120px] px-5 py-8">
-          <p className="text-center text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--muted)] mb-4">Built to connect</p>
+          <p className="text-center text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--muted)] mb-4">Connect the platforms you report on</p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
-            {['Local Services Ads', 'Google Ads', 'Google Business Profile', 'Meta Ads', 'SEMrush'].map((p) => (
+            {['Google Ads', 'Meta Ads', 'Google Analytics 4', 'Google Business Profile', 'SEMrush', 'LinkedIn Ads', 'TikTok Ads', 'Local Services Ads'].map((p) => (
               <span key={p} className="text-[13.5px] font-medium px-3.5 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--line)] text-[var(--ink-2)]">{p}</span>
             ))}
+            <span className="text-[13.5px] font-medium px-1.5 py-1.5 text-[var(--muted)]">and more</span>
           </div>
         </section>
       </Rise>
@@ -100,7 +101,7 @@ export default function Landing() {
         <Rise>
           <div className="text-center max-w-[600px] mx-auto mb-12">
             <h2 className="text-[28px] md:text-[34px] font-bold tracking-[-0.02em]">What it does</h2>
-            <p className="mt-3 text-[15px] text-[var(--ink-2)]">Four things an agency actually needs when it manages a roster of paid accounts.</p>
+            <p className="mt-3 text-[15px] text-[var(--ink-2)]">Four things an agency actually needs when it runs marketing for a roster of clients.</p>
           </div>
         </Rise>
         <div className="grid md:grid-cols-2 gap-5">
