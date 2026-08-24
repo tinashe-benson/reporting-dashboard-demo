@@ -7,13 +7,12 @@
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { toast } from 'sonner'
-import { Printer, Check } from 'lucide-react'
+import { Printer, Check, CalendarClock } from 'lucide-react'
 import { useApp } from '@/context/app'
-import { useWorkspace } from '@/context/workspace'
+import { useWorkspace, nextSend, type Freq } from '@/context/workspace'
 import { metricsFor, pacing, RANGES, type Account, type RangeId } from '@/lib/data'
 import { money, money2, num, compact } from '@/lib/format'
 import { Card, Button, Toggle, Segmented } from '@/components/ui/kit'
-import { Logo } from '@/components/Logo'
 
 type SectionKey = 'headline' | 'channels' | 'google' | 'search' | 'summary'
 const SECTIONS: { key: SectionKey; label: string; hint: string }[] = [
@@ -24,7 +23,9 @@ const SECTIONS: { key: SectionKey; label: string; hint: string }[] = [
   { key: 'summary', label: 'Summary & next steps', hint: 'Written recap' },
 ]
 
-const AGENCY = 'Tinashe Benson · Growth'
+const FREQ_OPTS: { value: Freq; label: string }[] = [
+  { value: 'off', label: 'Off' }, { value: 'weekly', label: 'Weekly' }, { value: 'monthly', label: 'Monthly' },
+]
 
 // --- date helpers -----------------------------------------------------------
 function fmt(d: Date, withYear = true): string {
@@ -44,7 +45,7 @@ function reportingPeriod(range: RangeId): { period: string; compared: string; pr
 export default function Reports() {
   const [params] = useSearchParams()
   const { range, setRange } = useApp()
-  const { me, accountsForSeat, getClient } = useWorkspace()
+  const { me, accountsForSeat, getClient, brand, brandMonogram, schedules, setSchedule } = useWorkspace()
   const scope = me ? accountsForSeat(me) : []
   const paramAcct = params.get('account') || ''
   const initial = scope.some((a) => a.id === paramAcct) ? paramAcct : (scope[0]?.id ?? '')
@@ -62,6 +63,7 @@ export default function Reports() {
   const p = pacing(account)
   const active = SECTIONS.filter((s) => sections[s.key])
   const rangeLabel = RANGES.find((r) => r.id === range)!.label
+  const schedule = schedules[account.id] ?? { freq: 'off' as Freq, recipient: '' }
 
   return (
     <div className="grid lg:grid-cols-[300px_1fr] gap-6">
@@ -109,6 +111,40 @@ export default function Reports() {
           <Button variant="primary" className="flex-1 justify-center" disabled={active.length === 0} onClick={() => window.print()}><Printer size={15} /> Export PDF</Button>
           <Button className="flex-1 justify-center" onClick={() => toast.success('Marked reviewed', { description: `${account.name} · ${rangeLabel}` })}><Check size={15} /> Mark reviewed</Button>
         </div>
+
+        <Card className="p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <CalendarClock size={15} className="text-[var(--accent)]" />
+            <div className="text-[13px] font-bold">Automatic delivery</div>
+          </div>
+          <p className="text-[11.5px] text-[var(--muted)] mb-3">Send this report to {account.name} on a schedule. No more building it by hand.</p>
+
+          <label className="eyebrow">Frequency</label>
+          <div className="mt-2 mb-3.5">
+            <Segmented
+              value={schedule.freq}
+              onChange={(v) => { setSchedule(account.id, { ...schedule, freq: v }); toast.success(v === 'off' ? 'Automatic delivery turned off' : `Scheduled ${v}`, { description: v === 'off' ? account.name : `${account.name} · next ${fmt(nextSend(v))}` }) }}
+              options={FREQ_OPTS.map((o) => ({ value: o.value, label: o.label }))}
+              className="w-full"
+            />
+          </div>
+
+          <label className="eyebrow">Send to</label>
+          <input
+            type="email"
+            value={schedule.recipient}
+            onChange={(e) => setSchedule(account.id, { ...schedule, recipient: e.target.value })}
+            placeholder="client@email.com"
+            className="w-full mt-2 bg-[var(--surface-2)] border border-[var(--line-2)] rounded-[8px] px-3 py-2 text-[13px] text-[var(--ink)] focus:outline-none focus:border-[var(--accent)]"
+          />
+
+          {schedule.freq !== 'off' && (
+            <div className="mt-3 flex items-center gap-2 text-[11.5px] text-[var(--ink-2)] bg-[var(--accent-weak)] rounded-[8px] px-3 py-2">
+              <CalendarClock size={13} className="text-[var(--accent)] flex-none" />
+              Next send <b className="text-[var(--ink)]">{fmt(nextSend(schedule.freq))}</b>{schedule.recipient ? <> to {schedule.recipient}</> : null}
+            </div>
+          )}
+        </Card>
       </div>
 
       {/* Sheet */}
@@ -119,7 +155,10 @@ export default function Reports() {
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-[12px] text-[var(--ink-2)] mb-3">
-                <Logo size={22} /> <span className="font-semibold">ReportBeacon</span>
+                {brand.logo
+                  ? <img src={brand.logo} alt="" className="w-[22px] h-[22px] rounded-[6px] object-cover" />
+                  : <span className="w-[22px] h-[22px] rounded-[6px] grid place-items-center text-[10px] font-bold text-white" style={{ background: brand.accent }}>{brandMonogram}</span>}
+                <span className="font-semibold">{brand.agencyName}</span>
               </div>
               <div className="eyebrow" style={{ color: account.color }}>{account.trade} · {account.location}</div>
               <h1 className="text-[28px] md:text-[32px] font-bold tracking-[-0.02em] leading-tight mt-1">{title}</h1>
@@ -133,7 +172,7 @@ export default function Reports() {
             <Meta label="Prepared for" value={account.name} />
             <Meta label="Reporting period" value={dates.period} />
             <Meta label="Compared to" value={dates.compared} />
-            <Meta label="Prepared by" value={AGENCY} />
+            <Meta label="Prepared by" value={brand.agencyName} />
           </div>
 
           {/* Body */}
@@ -210,7 +249,7 @@ export default function Reports() {
 
           <div className="border-t border-[var(--line)] mt-8 pt-4 flex items-center justify-between text-[11px] text-[var(--muted)]">
             <span>{account.name} · {dates.period}</span>
-            <span>Prepared by {AGENCY} · Confidential</span>
+            <span>Prepared by {brand.agencyName} · Confidential</span>
           </div>
         </div>
       </Card>

@@ -15,12 +15,29 @@ import {
 
 export type Member = Seat
 
+export interface Brand { agencyName: string; accent: string; logo: string | null }
+export type Freq = 'off' | 'weekly' | 'monthly'
+export interface Schedule { freq: Freq; recipient: string }
+
 interface Persisted {
   members: Member[]
   ownerById: Record<string, string> // clientId -> memberId ('' = unassigned)
   importedIds: string[]
   archivedIds: string[]
   connections: Record<PlatformId, boolean>
+  brand: Brand
+  schedules: Record<string, Schedule> // clientId -> schedule
+}
+
+const DEFAULT_BRAND: Brand = { agencyName: 'Tinashe Benson · Growth', accent: '#4a3aa7', logo: null }
+
+/** When the next automatic send lands: weekly → next Monday, monthly → 1st, both at 9am. */
+export function nextSend(freq: Freq): Date {
+  const d = new Date()
+  if (freq === 'weekly') { d.setDate(d.getDate() + ((8 - d.getDay()) % 7 || 7)) } // next Monday
+  else { d.setMonth(d.getMonth() + 1, 1) } // 1st of next month
+  d.setHours(9, 0, 0, 0)
+  return d
 }
 
 function seed(): Persisted {
@@ -33,6 +50,8 @@ function seed(): Persisted {
     importedIds: ACCOUNTS.map((a) => a.id),
     archivedIds: [],
     connections,
+    brand: DEFAULT_BRAND,
+    schedules: {},
   }
 }
 
@@ -48,6 +67,8 @@ function load(): Persisted {
       importedIds: p.importedIds ?? base.importedIds,
       archivedIds: p.archivedIds ?? base.archivedIds,
       connections: { ...base.connections, ...(p.connections ?? {}) },
+      brand: { ...base.brand, ...(p.brand ?? {}) },
+      schedules: p.schedules ?? base.schedules,
     }
   } catch {
     return seed()
@@ -82,6 +103,10 @@ interface WorkspaceApi extends Persisted {
   restoreClient: (clientId: string) => void
   connectProvider: (id: PlatformId) => void
   disconnectProvider: (id: PlatformId) => void
+  setBrand: (patch: Partial<Brand>) => void
+  brandMonogram: string
+  setSchedule: (clientId: string, s: Schedule) => void
+  scheduledFor: (m: Member) => { client: Account; schedule: Schedule; nextSend: Date }[]
   resetWorkspace: () => void
 }
 
@@ -148,6 +173,18 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       restoreClient: (clientId) => patch({ archivedIds: state.archivedIds.filter((x) => x !== clientId) }),
       connectProvider: (id) => patch({ connections: { ...state.connections, [id]: true } }),
       disconnectProvider: (id) => patch({ connections: { ...state.connections, [id]: false } }),
+
+      setBrand: (p) => patch({ brand: { ...state.brand, ...p } }),
+      brandMonogram: initials(state.brand.agencyName),
+      setSchedule: (clientId, s) => patch({ schedules: { ...state.schedules, [clientId]: s } }),
+      scheduledFor: (m) => {
+        const scope = m.role === 'owner' ? clients : clients.filter((c) => state.ownerById[c.id] === m.id)
+        return scope
+          .map((client) => ({ client, schedule: state.schedules[client.id] }))
+          .filter((r): r is { client: Account; schedule: Schedule } => !!r.schedule && r.schedule.freq !== 'off')
+          .map((r) => ({ ...r, nextSend: nextSend(r.schedule.freq) }))
+          .sort((a, b) => a.nextSend.getTime() - b.nextSend.getTime())
+      },
       resetWorkspace: () => save(seed()),
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

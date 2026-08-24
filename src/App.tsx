@@ -14,6 +14,8 @@ import Reports from '@/pages/Reports'
 import Integrations from '@/pages/Integrations'
 import Settings from '@/pages/Settings'
 import Team from '@/pages/Team'
+import Branding from '@/pages/Branding'
+import Automations from '@/pages/Automations'
 
 export default function App() {
   const { theme, seatId } = useApp()
@@ -29,8 +31,10 @@ export default function App() {
             <Route path="recommendations" element={<RecommendationsPage />} />
             <Route path="alerts" element={<Alerts />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="automations" element={<Automations />} />
             <Route path="integrations" element={<Integrations />} />
             <Route path="team" element={<Team />} />
+            <Route path="branding" element={<Branding />} />
             <Route path="settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/app" replace />} />
           </Route>

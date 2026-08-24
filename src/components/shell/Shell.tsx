@@ -2,14 +2,13 @@
 import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 import {
-  LayoutGrid, Users, Bell, FileText, Cable, Settings as SettingsIcon, Lightbulb, UsersRound,
+  LayoutGrid, Users, Bell, FileText, Cable, Settings as SettingsIcon, Lightbulb, UsersRound, Palette, CalendarClock,
   PanelLeftClose, PanelLeftOpen, Menu, X, Sun, Moon, LogOut,
 } from 'lucide-react'
 import { useApp } from '@/context/app'
 import { useWorkspace } from '@/context/workspace'
 import { allAlerts } from '@/lib/data'
 import { IconButton } from '@/components/ui/kit'
-import { Logo } from '@/components/Logo'
 
 const NAV = [
   { to: '/app', label: 'Portfolio', icon: LayoutGrid, end: true },
@@ -17,11 +16,13 @@ const NAV = [
   { to: '/app/recommendations', label: 'Recommendations', icon: Lightbulb },
   { to: '/app/alerts', label: 'Alerts', icon: Bell, badge: true },
   { to: '/app/reports', label: 'Reports', icon: FileText },
+  { to: '/app/automations', label: 'Automations', icon: CalendarClock },
 ]
 
 const TITLES: Record<string, string> = {
   '/app': 'Portfolio', '/app/accounts': 'Accounts', '/app/recommendations': 'Recommendations', '/app/alerts': 'Alerts',
-  '/app/reports': 'Reports', '/app/integrations': 'Integrations', '/app/settings': 'Settings', '/app/team': 'Team & access',
+  '/app/reports': 'Reports', '/app/automations': 'Automations', '/app/integrations': 'Integrations',
+  '/app/settings': 'Settings', '/app/team': 'Team & access', '/app/branding': 'Branding',
 }
 function pageTitle(path: string): string {
   if (path.startsWith('/app/accounts/')) return 'Account'
@@ -30,7 +31,7 @@ function pageTitle(path: string): string {
 
 export default function Shell() {
   const { navCollapsed, toggleNav, mobileNavOpen, setMobileNavOpen, theme, toggleTheme, signOut } = useApp()
-  const { me, isAdmin, accountsForSeat } = useWorkspace()
+  const { me, isAdmin, accountsForSeat, brand } = useWorkspace()
   const location = useLocation()
   const navigate = useNavigate()
   const scoped = me ? accountsForSeat(me) : []
@@ -38,12 +39,18 @@ export default function Shell() {
   const seat = me
 
   const NAV_2 = [
-    ...(isAdmin ? [{ to: '/app/team', label: 'Team & access', icon: UsersRound }] : []),
+    ...(isAdmin ? [{ to: '/app/team', label: 'Team & access', icon: UsersRound }, { to: '/app/branding', label: 'Branding', icon: Palette }] : []),
     { to: '/app/integrations', label: 'Integrations', icon: Cable },
     { to: '/app/settings', label: 'Settings', icon: SettingsIcon },
   ]
 
   useEffect(() => { setMobileNavOpen(false) }, [location.pathname, setMobileNavOpen])
+
+  // White-label: the agency's accent recolours the console while signed in.
+  useEffect(() => {
+    document.documentElement.style.setProperty('--accent', brand.accent)
+    return () => { document.documentElement.style.removeProperty('--accent') }
+  }, [brand.accent])
 
   const railWidth = navCollapsed ? 'lg:w-[68px]' : 'lg:w-[236px]'
   const doSignOut = () => { signOut(); navigate('/app') }
@@ -107,14 +114,17 @@ export default function Shell() {
 }
 
 function Rail({ collapsed, alertCount, nav2, onCloseMobile }: { collapsed: boolean; alertCount: number; nav2: { to: string; label: string; icon: any }[]; onCloseMobile: () => void }) {
+  const { brand, brandMonogram } = useWorkspace()
   return (
     <>
       <div className={`flex items-center gap-2.5 px-4 pt-4 pb-4 ${collapsed ? 'lg:justify-center lg:px-0' : ''}`}>
-        <Logo size={30} />
+        {brand.logo
+          ? <img src={brand.logo} alt="" className="w-[30px] h-[30px] rounded-[8px] object-cover flex-none" />
+          : <span className="w-[30px] h-[30px] rounded-[8px] grid place-items-center flex-none text-[12px] font-bold text-white" style={{ background: brand.accent }}>{brandMonogram}</span>}
         {!collapsed && (
-          <div>
-            <div className="font-bold text-[14.5px] tracking-[-0.01em] leading-none">ReportBeacon</div>
-            <div className="text-[11px] text-[var(--muted)] mt-0.5">Account console</div>
+          <div className="min-w-0">
+            <div className="font-bold text-[14.5px] tracking-[-0.01em] leading-tight truncate">{brand.agencyName}</div>
+            <div className="text-[11px] text-[var(--muted)] mt-0.5">Powered by ReportBeacon</div>
           </div>
         )}
         <IconButton label="Close navigation" className="lg:hidden ml-auto" onClick={onCloseMobile}><X size={16} /></IconButton>
