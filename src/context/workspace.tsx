@@ -29,7 +29,9 @@ interface Persisted {
   schedules: Record<string, Schedule> // clientId -> schedule
 }
 
-const DEFAULT_BRAND: Brand = { agencyName: 'Tinashe Benson · Growth', accent: '#4a3aa7', logo: null }
+// Demo opens under a neutral placeholder brand so a prospect reads it as
+// their own agency, then rebrands it live on the Branding screen.
+const DEFAULT_BRAND: Brand = { agencyName: 'Your Agency', accent: '#4a3aa7', logo: null }
 
 /** When the next automatic send lands: weekly → next Monday, monthly → 1st, both at 9am. */
 export function nextSend(freq: Freq): Date {
