@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router'
 import { toast } from 'sonner'
-import { LogOut, ArrowRight } from 'lucide-react'
+import { LogOut, ArrowRight, RotateCcw } from 'lucide-react'
 import { useApp } from '@/context/app'
 import { useWorkspace } from '@/context/workspace'
 import { RANGES } from '@/lib/data'
@@ -12,12 +12,20 @@ import { Reveal } from '@/components/ui/disclosure'
 
 export default function Settings() {
   const { theme, setTheme, range, setRange, signOut, ai } = useApp()
-  const { me, accountsForSeat } = useWorkspace()
+  const { me, accountsForSeat, resetWorkspace } = useWorkspace()
   const seat = me
   const navigate = useNavigate()
   const [alertEmail, setAlertEmail] = useState(true)
   const [weeklyDigest, setWeeklyDigest] = useState(false)
+  const [confirmReset, setConfirmReset] = useState(false)
   const connectedModel = MODELS.find((m) => m.id === ai.model)
+
+  function doReset() {
+    resetWorkspace()
+    toast.success('Demo reset', { description: 'Roster, team, branding and schedules are back to the sample state.' })
+    setTimeout(() => window.location.assign('/app'), 250)
+  }
+
 
   return (
     <Reveal className="flex flex-col gap-4 max-w-[640px]">
@@ -57,6 +65,19 @@ export default function Settings() {
         <Row label="Email me on new alerts" hint="At-risk and watch flags"><Toggle on={alertEmail} onChange={setAlertEmail} label="Alert email" /></Row>
         <Row label="Weekly portfolio digest" hint="Monday mornings"><Toggle on={weeklyDigest} onChange={setWeeklyDigest} label="Weekly digest" /></Row>
         <div className="mt-4"><Button variant="primary" onClick={() => toast.success('Preferences saved')}>Save preferences</Button></div>
+      </Card>
+
+      <Card className="p-5">
+        <div className="text-[13px] font-bold mb-1">Demo data</div>
+        <p className="text-[12px] text-[var(--muted)] mb-4 max-w-[420px]">Everything you change in this demo is saved to this browser only. Reset to bring back the sample roster, team, branding and schedules for a fresh walkthrough.</p>
+        {confirmReset ? (
+          <div className="flex items-center gap-2.5">
+            <Button variant="primary" onClick={doReset}><RotateCcw size={15} /> Yes, reset the demo</Button>
+            <Button onClick={() => setConfirmReset(false)}>Cancel</Button>
+          </div>
+        ) : (
+          <Button onClick={() => setConfirmReset(true)}><RotateCcw size={15} /> Reset demo</Button>
+        )}
       </Card>
     </Reveal>
   )

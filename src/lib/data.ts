@@ -138,7 +138,7 @@ export interface KeywordMove {
 export interface Account {
   id: string
   name: string
-  trade: 'Dental' | 'Med spa' | 'Legal' | 'Auto repair'
+  trade: 'Dental' | 'Med spa' | 'Legal' | 'Auto repair' | 'Veterinary' | 'Real estate'
   location: string
   mark: string
   color: string
@@ -290,7 +290,7 @@ export const IMPORTABLE: Account[] = [
   {
     id: 'lakeside-vet',
     name: 'Lakeside Veterinary',
-    trade: 'Med spa',
+    trade: 'Veterinary',
     location: 'Seattle, WA',
     mark: 'LV',
     color: '#0e9e8f',
@@ -313,7 +313,7 @@ export const IMPORTABLE: Account[] = [
   {
     id: 'summit-realty',
     name: 'Summit Realty Group',
-    trade: 'Legal',
+    trade: 'Real estate',
     location: 'Nashville, TN',
     mark: 'SR',
     color: '#c2410c',
