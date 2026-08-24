@@ -5,7 +5,7 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router'
 import {
-  ArrowRight, LayoutGrid, BellRing, Wallet, FileText, Sun, Moon, Check, Play,
+  ArrowRight, LayoutGrid, BellRing, Wallet, FileText, CalendarClock, Palette, Sun, Moon, Check, Play,
 } from 'lucide-react'
 import { useApp } from '@/context/app'
 import { Logo } from '@/components/Logo'
@@ -101,7 +101,7 @@ export default function Landing() {
         <Rise>
           <div className="text-center max-w-[600px] mx-auto mb-12">
             <h2 className="text-[28px] md:text-[34px] font-bold tracking-[-0.02em]">What it does</h2>
-            <p className="mt-3 text-[15px] text-[var(--ink-2)]">Four things an agency actually needs when it runs marketing for a roster of clients.</p>
+            <p className="mt-3 text-[15px] text-[var(--ink-2)]">Everything an agency needs to run marketing for a roster of clients, in one place.</p>
           </div>
         </Rise>
         <div className="grid md:grid-cols-2 gap-5">
@@ -111,11 +111,17 @@ export default function Landing() {
           <Feature icon={<BellRing size={20} />} title="Catch problems before the client calls" delay={0.06}>
             It flags what needs attention today. A lead source that dropped, a response time slipping past target, spend running ahead of budget. You see it on the first screen.
           </Feature>
-          <Feature icon={<Wallet size={20} />} title="Budget suggestions, with the math" delay={0.12}>
-            It recommends where to move spend to bring cost per lead down, and shows the numbers behind each one. Use the built-in engine, or connect your own model through OpenRouter.
+          <Feature icon={<Wallet size={20} />} title="Budget moves, with the math" delay={0.12}>
+            It recommends where to shift spend to bring cost per lead down, and shows the numbers behind each call. Use the built-in engine, or connect your own model through OpenRouter.
           </Feature>
-          <Feature icon={<FileText size={20} />} title="Reports and access built for a team" delay={0.18}>
-            Turn any account into a clean, print-ready report for review. Each manager signs in and sees only their own accounts. The owner sees the whole agency.
+          <Feature icon={<FileText size={20} />} title="Client-ready reports in a click" delay={0.18}>
+            Turn any account into a clean report with the real reporting dates and the metrics that client cares about. Export to PDF for review, or send it straight over.
+          </Feature>
+          <Feature icon={<CalendarClock size={20} />} title="Reports that send themselves" delay={0.24}>
+            Put a client on a weekly or monthly schedule and the report goes out on its own. Your team stops rebuilding the same deck by hand every month.
+          </Feature>
+          <Feature icon={<Palette size={20} />} title="Your agency's brand, start to finish" delay={0.3}>
+            Your name, colour, and logo across the console and every report. Each manager signs in to their own accounts; the owner sees the whole agency.
           </Feature>
         </div>
       </section>
